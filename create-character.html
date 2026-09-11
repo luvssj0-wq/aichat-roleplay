@@ -12,6 +12,14 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -111,6 +119,9 @@
             color: white;
             font-size: 1rem;
             transition: border-color 0.2s ease;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
         }
 
         input[type="text"]:focus,
@@ -165,7 +176,7 @@
         }
 
         .image-preview {
-            max-width: 300px;
+            max-width: 100%;
             height: auto;
             border-radius: 0.5rem;
             border: 1px solid #374151;
@@ -211,55 +222,85 @@
         .sidebar {
             background-color: #1f2937;
             border-right: 1px solid #374151;
-            height: 100vh;
             width: 256px;
             flex-shrink: 0;
             overflow-y: auto;
             position: fixed;
             left: 0;
             top: 0;
+            height: 100vh;
+            z-index: 100;
         }
 
         .main-content {
             margin-left: 256px;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
+            width: calc(100% - 256px);
         }
 
         .header {
             background-color: #1f2937;
             border-bottom: 1px solid #374151;
-            padding: 1rem 2rem;
+            padding: 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 72px;
+            height: auto;
+            min-height: 72px;
+            flex-wrap: wrap;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .header h2 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin: 0;
+            flex: 1 1 100%;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .header-search {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-search input {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             flex-shrink: 0;
         }
 
         .content {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-            }
-
-            .main-content {
-                margin-left: 80px;
-            }
-
-            .sidebar-text {
-                display: none;
-            }
-
-            .grid-2 {
-                grid-template-columns: 1fr !important;
-            }
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .grid-2 {
@@ -297,18 +338,143 @@
             background-color: #dc2626;
             color: white;
         }
+
+        .sidebar-text {
+            white-space: nowrap;
+        }
+
+        .toggle-sidebar-btn {
+            display: none;
+        }
+
+        /* Mobile - Pantallas pequeñas (hasta 767px) */
+        @media (max-width: 767px) {
+            .sidebar {
+                position: fixed;
+                left: -256px;
+                width: 256px;
+                height: 100vh;
+                z-index: 200;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header h2 {
+                font-size: 1.5rem;
+                flex: 1 1 auto;
+            }
+
+            .header-controls {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .header-search {
+                width: 100%;
+            }
+
+            .profile-avatar {
+                align-self: flex-end;
+            }
+
+            .toggle-sidebar-btn {
+                display: block;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                background-color: #dc2626;
+                border: none;
+                border-radius: 50%;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+                z-index: 150;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="url"],
+            input[type="number"],
+            input[type="range"],
+            select,
+            textarea {
+                padding: 0.75rem 1rem;
+                font-size: 16px;
+            }
+
+            .content-wrapper {
+                padding: 0;
+            }
+        }
+
+        /* Tablet - 768px a 1024px */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+
+            .header {
+                padding: 1rem 1.5rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Desktop - 1025px y mayor */
+        @media (min-width: 1025px) {
+            .sidebar {
+                width: 256px;
+            }
+
+            .main-content {
+                margin-left: 256px;
+                width: calc(100% - 256px);
+            }
+        }
     </style>
 </head>
 <body>
-    <div style="display: flex; height: 100vh;">
+    <div style="display: flex; height: 100vh; width: 100%; overflow: hidden;">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <!-- Logo -->
             <div style="padding: 1rem; border-bottom: 1px solid #374151; display: flex; align-items: center; justify-content: space-between;">
-                <h1 class="gradient-text" style="font-size: 1.25rem; font-weight: bold; display: none;" id="sidebarTitle">NEXUS</h1>
-                <button onclick="toggleSidebar()" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.25rem;">
-                    ←
-                </button>
+                <h1 class="gradient-text" style="font-size: 1.25rem; font-weight: bold;" id="sidebarTitle">NEXUS</h1>
             </div>
 
             <!-- Navigation -->
@@ -346,11 +512,7 @@
             <!-- Actions -->
             <div style="padding: 1rem; border-top: 1px solid #374151; gap: 0.5rem; display: flex; flex-direction: column;">
                 <button class="btn btn-primary" style="width: 100%; text-align: center;">
-                    <span style="display: none;" class="sidebar-text">+ Personaje</span>
-                    <span style="display: inline;" id="sidebarBtnText">+</span>
-                </button>
-                <button class="btn btn-secondary" style="width: 100%; text-align: center; display: none;" class="sidebar-text">
-                    🔍 Buscar
+                    <span class="sidebar-text">+ Personaje</span>
                 </button>
             </div>
         </div>
@@ -359,24 +521,24 @@
         <div class="main-content">
             <!-- Header -->
             <div class="header">
-                <h2 style="font-size: 1.875rem; font-weight: bold;">Crear Personaje</h2>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <input type="text" placeholder="Buscar..." style="padding: 0.5rem 1rem; width: 300px; max-width: 100%;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                        👤
+                <h2>Crear Personaje</h2>
+                <div class="header-controls">
+                    <div class="header-search">
+                        <input type="text" placeholder="Buscar..." style="padding: 0.5rem 1rem;">
                     </div>
+                    <div class="profile-avatar">👤</div>
                 </div>
             </div>
 
             <!-- Content -->
             <div class="content">
-                <div style="max-width: 1200px; margin: 0 auto;">
+                <div class="content-wrapper">
                     <div class="fade-in">
                         <h1 style="font-size: 2.25rem; font-weight: bold; margin-bottom: 0.5rem;">Crear Nuevo Personaje</h1>
                         <p style="color: #9ca3af; margin-bottom: 2rem;">Define cada aspecto del personaje para la mejor experiencia</p>
 
                         <!-- Tabs -->
-                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #374151; padding-bottom: 1rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #374151; padding-bottom: 1rem; flex-wrap: wrap;">
                             <button class="tab-inactive tab-active" onclick="switchTab('basic')" style="border-bottom: 2px solid #dc2626; color: #dc2626; padding-bottom: 0.75rem;">
                                 Información Básica
                             </button>
@@ -496,7 +658,7 @@
                                     <p style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.5rem;">
                                         Esta guía solo la ve la IA, no aparecerá como diálogo normal
                                     </p>
-                                    <textarea id="systemPrompt" placeholder="Ej: Siempre responde en tercera persona. Incluye acciones entre asteriscos. Mantén el tono oscuro y misterioso." style="height: 160px;"></textarea>
+                                    <textarea id="systemPrompt" placeholder="Ej: Siempre responde en tercera persona. Incluye acciones entre asteriscos. Mantén el tono oscuro y misterioso." style="height: 128px;"></textarea>
                                 </div>
 
                                 <!-- Initial Message -->
@@ -587,11 +749,11 @@
                             </div>
 
                             <!-- Submit Buttons -->
-                            <div style="display: flex; gap: 1rem; padding-top: 2rem; border-top: 1px solid #374151; margin-top: 2rem;">
-                                <button type="button" class="btn btn-secondary" onclick="cancelForm()" style="flex: 1; padding: 0.75rem;">
+                            <div style="display: flex; gap: 1rem; padding-top: 2rem; border-top: 1px solid #374151; margin-top: 2rem; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-secondary" onclick="cancelForm()" style="flex: 1; min-width: 150px; padding: 0.75rem;">
                                     Cancelar
                                 </button>
-                                <button type="submit" class="btn btn-primary" id="submitBtn" style="flex: 1; padding: 0.75rem;">
+                                <button type="submit" class="btn btn-primary" id="submitBtn" style="flex: 1; min-width: 150px; padding: 0.75rem;">
                                     Crear Personaje
                                 </button>
                             </div>
@@ -602,29 +764,25 @@
         </div>
     </div>
 
+    <!-- Toggle Sidebar Button (Mobile) -->
+    <button class="toggle-sidebar-btn" id="toggleSidebarBtn" onclick="toggleSidebar()">☰</button>
+
     <script>
         // Toggle Sidebar
         function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
-            const sidebarTitle = document.getElementById('sidebarTitle');
-            const sidebarBtnText = document.getElementById('sidebarBtnText');
-            
-            if (sidebar.style.width === '80px') {
-                sidebar.style.width = '256px';
-                mainContent.style.marginLeft = '256px';
-                sidebarTitle.style.display = 'block';
-                document.querySelectorAll('.sidebar-text').forEach(el => el.style.display = 'inline');
-                sidebarBtnText.style.display = 'none';
-                document.querySelectorAll('[class*="sidebar-text"]')[0]?.parentElement?.parentElement?.style.setProperty('width', '100%');
-            } else {
-                sidebar.style.width = '80px';
-                mainContent.style.marginLeft = '80px';
-                sidebarTitle.style.display = 'none';
-                document.querySelectorAll('.sidebar-text').forEach(el => el.style.display = 'none');
-                sidebarBtnText.style.display = 'inline';
-            }
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
         }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            if (window.innerWidth <= 767 && sidebar.classList.contains('open') && 
+                !sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
 
         // Switch Tab
         function switchTab(tabName) {
@@ -650,7 +808,7 @@
         }
 
         // Image Preview
-        document.getElementById('image').addEventListener('change', function() {
+        document.getElementById('image').addEventListener('input', function() {
             const imagePreview = document.getElementById('imagePreview');
             if (this.value) {
                 imagePreview.src = this.value;
@@ -742,17 +900,6 @@
                 errorMessage.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Crear Personaje';
-            }
-        });
-
-        // Monitor image input with 'input' event
-        document.getElementById('image').addEventListener('input', function() {
-            const imagePreview = document.getElementById('imagePreview');
-            if (this.value) {
-                imagePreview.src = this.value;
-                imagePreview.style.display = 'block';
-            } else {
-                imagePreview.style.display = 'none';
             }
         });
     </script>
