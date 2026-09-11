@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NEXUS - Plataforma avanzada de conversación y roleplay con IA" />
+    <meta name="theme-color" content="#111827" />
+    <title>NEXUS - Crear Personaje</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b91c1c;
+        }
+
+        body {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #b91c1c;
+        }
+
+        .btn-primary:active:not(:disabled) {
+            background-color: #991b1b;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #374151;
+        }
+
+        .btn-secondary:hover {
+            background-color: #111827;
+        }
+
+        .btn-ghost {
+            background-color: transparent;
+            color: white;
+        }
+
+        .btn-ghost:hover {
+            background-color: #1f2937;
+        }
+
+        .card {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #dc2626;
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.2);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="number"],
+        input[type="range"],
+        select,
+        textarea {
+            background-color: #111827;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .tab-active {
+            border-bottom-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .tab-inactive {
+            border-bottom-color: transparent;
+            color: #9ca3af;
+        }
+
+        .tab-inactive:hover {
+            color: white;
+        }
+
+        .error-message {
+            background-color: rgba(190, 24, 93, 0.2);
+            border: 1px solid #dc2626;
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message {
+            background-color: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #86efac;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .image-preview {
+            max-width: 300px;
+            height: auto;
+            border-radius: 0.5rem;
+            border: 1px solid #374151;
+            margin-top: 1rem;
+        }
+
+        .tag-badge {
+            display: inline-block;
+            background-color: #111827;
+            color: #d1d5db;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .temperature-label {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+
+        .range-slider {
+            width: 100%;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sidebar {
+            background-color: #1f2937;
+            border-right: 1px solid #374151;
+            height: 100vh;
+            width: 256px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .main-content {
+            margin-left: 256px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: #1f2937;
+            border-bottom: 1px solid #374151;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            flex-shrink: 0;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .main-content {
+                margin-left: 80px;
+            }
+
+            .sidebar-text {
+                display: none;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #d1d5db;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background-color: #111827;
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: #dc2626;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; height: 100vh;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo -->
+            <div style="padding: 1rem; border-bottom: 1px solid #374151; display: flex; align-items: center; justify-content: space-between;">
+                <h1 class="gradient-text" style="font-size: 1.25rem; font-weight: bold; display: none;" id="sidebarTitle">NEXUS</h1>
+                <button onclick="toggleSidebar()" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.25rem;">
+                    ←
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav style="flex: 1; padding: 1rem; overflow-y: auto;">
+                <a href="#" class="nav-item active">
+                    <span>🏠</span>
+                    <span class="sidebar-text">Inicio</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>🎭</span>
+                    <span class="sidebar-text">Personajes</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>💬</span>
+                    <span class="sidebar-text">Chats</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>👤</span>
+                    <span class="sidebar-text">Perfiles</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>⭐</span>
+                    <span class="sidebar-text">Favoritos</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>⚙️</span>
+                    <span class="sidebar-text">Ajustes</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span>🗑️</span>
+                    <span class="sidebar-text">Papelera</span>
+                </a>
+            </nav>
+
+            <!-- Actions -->
+            <div style="padding: 1rem; border-top: 1px solid #374151; gap: 0.5rem; display: flex; flex-direction: column;">
+                <button class="btn btn-primary" style="width: 100%; text-align: center;">
+                    <span style="display: none;" class="sidebar-text">+ Personaje</span>
+                    <span style="display: inline;" id="sidebarBtnText">+</span>
+                </button>
+                <button class="btn btn-secondary" style="width: 100%; text-align: center; display: none;" class="sidebar-text">
+                    🔍 Buscar
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h2 style="font-size: 1.875rem; font-weight: bold;">Crear Personaje</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <input type="text" placeholder="Buscar..." style="padding: 0.5rem 1rem; width: 300px; max-width: 100%;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        👤
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <div style="max-width: 1200px; margin: 0 auto;">
+                    <div class="fade-in">
+                        <h1 style="font-size: 2.25rem; font-weight: bold; margin-bottom: 0.5rem;">Crear Nuevo Personaje</h1>
+                        <p style="color: #9ca3af; margin-bottom: 2rem;">Define cada aspecto del personaje para la mejor experiencia</p>
+
+                        <!-- Tabs -->
+                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #374151; padding-bottom: 1rem;">
+                            <button class="tab-inactive tab-active" onclick="switchTab('basic')" style="border-bottom: 2px solid #dc2626; color: #dc2626; padding-bottom: 0.75rem;">
+                                Información Básica
+                            </button>
+                            <button class="tab-inactive" onclick="switchTab('personality')" style="padding-bottom: 0.75rem;">
+                                Personalidad & Lore
+                            </button>
+                            <button class="tab-inactive" onclick="switchTab('config')" style="padding-bottom: 0.75rem;">
+                                Configuración
+                            </button>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="characterForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            <!-- Error Message -->
+                            <div id="errorMessage" style="display: none;" class="error-message"></div>
+
+                            <!-- Tab: Basic Information -->
+                            <div id="tab-basic" class="fade-in">
+                                <div class="grid-2">
+                                    <!-- Name -->
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Nombre del Personaje *
+                                        </label>
+                                        <input type="text" id="name" placeholder="Ej: Elena Shadowborne" required>
+                                    </div>
+
+                                    <!-- Type -->
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Tipo de Personaje
+                                        </label>
+                                        <select id="type">
+                                            <option value="fictional">Ficticio</option>
+                                            <option value="real">Real</option>
+                                            <option value="mixed">Mixto</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Profession -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Profesión
+                                    </label>
+                                    <input type="text" id="profession" placeholder="Ej: Cazadora de Magia Oscura, Detective, Hechicera">
+                                </div>
+
+                                <!-- Image URL -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        URL de Imagen
+                                    </label>
+                                    <input type="url" id="image" placeholder="https://example.com/image.jpg">
+                                    <img id="imagePreview" class="image-preview" style="display: none;">
+                                </div>
+
+                                <!-- Appearance -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Apariencia
+                                    </label>
+                                    <textarea id="appearance" placeholder="Describe la apariencia física: altura, peso, color de cabello, ojos, marcas particulares, etc." style="height: 128px;"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Tab: Personality & Lore -->
+                            <div id="tab-personality" style="display: none;" class="fade-in">
+                                <!-- Personality -->
+                                <div>
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Personalidad
+                                    </label>
+                                    <textarea id="personality" placeholder="Describe los rasgos de personalidad: comportamiento, reacciones emocionales, fortalezas, debilidades, etc." style="height: 160px;"></textarea>
+                                </div>
+
+                                <!-- History -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Historia
+                                    </label>
+                                    <textarea id="history" placeholder="El trasfondo y vida pasada del personaje. Momentos clave, traumas, logros." style="height: 160px;"></textarea>
+                                </div>
+
+                                <!-- Lore -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Lore Extenso
+                                    </label>
+                                    <textarea id="lore" placeholder="Información detallada, mundo en el que existe, contexto general, leyendas relacionadas." style="height: 160px;"></textarea>
+                                </div>
+
+                                <!-- Relationships -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Relaciones
+                                    </label>
+                                    <textarea id="relationships" placeholder="Relaciones con otros personajes: familia, amigos, enemigos, aliados." style="height: 128px;"></textarea>
+                                </div>
+
+                                <!-- Additional Info -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Información Adicional
+                                    </label>
+                                    <textarea id="additionalInfo" placeholder="Cualquier otro detalle importante: habilidades especiales, secretos, objetivos, miedos." style="height: 128px;"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Tab: Configuration -->
+                            <div id="tab-config" style="display: none;" class="fade-in">
+                                <!-- System Prompt -->
+                                <div>
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Guía Interna para la IA
+                                    </label>
+                                    <p style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.5rem;">
+                                        Esta guía solo la ve la IA, no aparecerá como diálogo normal
+                                    </p>
+                                    <textarea id="systemPrompt" placeholder="Ej: Siempre responde en tercera persona. Incluye acciones entre asteriscos. Mantén el tono oscuro y misterioso." style="height: 160px;"></textarea>
+                                </div>
+
+                                <!-- Initial Message -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Mensaje Inicial
+                                    </label>
+                                    <textarea id="initialMessage" placeholder="El primer mensaje que el personaje enviará cuando se inicie un chat" style="height: 96px;"></textarea>
+                                </div>
+
+                                <!-- Temperature -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Temperatura (Creatividad)
+                                    </label>
+                                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" class="range-slider">
+                                    <div class="temperature-label" id="temperatureLabel">0.7 - Balanceado</div>
+                                </div>
+
+                                <!-- Model Config -->
+                                <div class="grid-2" style="margin-top: 1.5rem;">
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Modelo
+                                        </label>
+                                        <select id="model">
+                                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                            <option value="gpt-4">GPT-4</option>
+                                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Tokens Máximos
+                                        </label>
+                                        <input type="number" id="maxTokens" min="256" max="4096" value="2048">
+                                    </div>
+
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Top P
+                                        </label>
+                                        <input type="number" id="topP" min="0" max="1" step="0.1" value="1">
+                                    </div>
+
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Frequency Penalty
+                                        </label>
+                                        <input type="number" id="frequencyPenalty" min="0" max="2" step="0.1" value="0">
+                                    </div>
+                                </div>
+
+                                <!-- Scenario & Context -->
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Escenario
+                                    </label>
+                                    <textarea id="scenario" placeholder="El contexto o escenario donde la IA debería imaginar que está con este personaje." style="height: 96px;"></textarea>
+                                </div>
+
+                                <div style="margin-top: 1.5rem;">
+                                    <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                        Contexto General
+                                    </label>
+                                    <textarea id="context" placeholder="Información global sobre el universo, mundo o contexto del personaje." style="height: 96px;"></textarea>
+                                </div>
+
+                                <!-- Tags & Visibility -->
+                                <div class="grid-2" style="margin-top: 1.5rem;">
+                                    <div>
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: white;">
+                                            Etiquetas (separadas por comas)
+                                        </label>
+                                        <input type="text" id="tags" placeholder="Ej: fantasy, oscuro, misterioso, romance">
+                                    </div>
+
+                                    <div style="display: flex; align-items: flex-end;">
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                            <input type="checkbox" id="isPublic" style="width: 1rem; height: 1rem;">
+                                            <span style="font-size: 0.875rem; font-weight: 600; color: white;">
+                                                Hacer público
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Buttons -->
+                            <div style="display: flex; gap: 1rem; padding-top: 2rem; border-top: 1px solid #374151; margin-top: 2rem;">
+                                <button type="button" class="btn btn-secondary" onclick="cancelForm()" style="flex: 1; padding: 0.75rem;">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn" style="flex: 1; padding: 0.75rem;">
+                                    Crear Personaje
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarTitle = document.getElementById('sidebarTitle');
+            const sidebarBtnText = document.getElementById('sidebarBtnText');
+            
+            if (sidebar.style.width === '80px') {
+                sidebar.style.width = '256px';
+                mainContent.style.marginLeft = '256px';
+                sidebarTitle.style.display = 'block';
+                document.querySelectorAll('.sidebar-text').forEach(el => el.style.display = 'inline');
+                sidebarBtnText.style.display = 'none';
+                document.querySelectorAll('[class*="sidebar-text"]')[0]?.parentElement?.parentElement?.style.setProperty('width', '100%');
+            } else {
+                sidebar.style.width = '80px';
+                mainContent.style.marginLeft = '80px';
+                sidebarTitle.style.display = 'none';
+                document.querySelectorAll('.sidebar-text').forEach(el => el.style.display = 'none');
+                sidebarBtnText.style.display = 'inline';
+            }
+        }
+
+        // Switch Tab
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.getElementById('tab-basic').style.display = 'none';
+            document.getElementById('tab-personality').style.display = 'none';
+            document.getElementById('tab-config').style.display = 'none';
+
+            // Show selected tab
+            document.getElementById('tab-' + tabName).style.display = 'block';
+
+            // Update tab button styles
+            document.querySelectorAll('.tab-inactive').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.style.borderBottomColor = 'transparent';
+                btn.style.color = '#9ca3af';
+            });
+
+            const activeBtn = event.target;
+            activeBtn.classList.add('tab-active');
+            activeBtn.style.borderBottomColor = '#dc2626';
+            activeBtn.style.color = '#dc2626';
+        }
+
+        // Image Preview
+        document.getElementById('image').addEventListener('change', function() {
+            const imagePreview = document.getElementById('imagePreview');
+            if (this.value) {
+                imagePreview.src = this.value;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+
+        // Temperature Label Update
+        document.getElementById('temperature').addEventListener('input', function() {
+            const temp = parseFloat(this.value);
+            let label = '';
+            if (temp < 0.3) {
+                label = 'Preciso';
+            } else if (temp < 0.7) {
+                label = 'Balanceado';
+            } else {
+                label = 'Creativo';
+            }
+            document.getElementById('temperatureLabel').textContent = temp.toFixed(1) + ' - ' + label;
+        });
+
+        // Cancel Form
+        function cancelForm() {
+            if (confirm('¿Estás seguro de que quieres cancelar? Se perderán todos los cambios.')) {
+                window.location.href = '/characters';
+            }
+        }
+
+        // Submit Form
+        document.getElementById('characterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                // Validate
+                const name = document.getElementById('name').value.trim();
+                if (!name) {
+                    throw new Error('El nombre del personaje es requerido');
+                }
+
+                // Collect form data
+                const characterData = {
+                    name: document.getElementById('name').value,
+                    image: document.getElementById('image').value,
+                    personality: document.getElementById('personality').value,
+                    appearance: document.getElementById('appearance').value,
+                    history: document.getElementById('history').value,
+                    profession: document.getElementById('profession').value,
+                    relationships: document.getElementById('relationships').value,
+                    scenario: document.getElementById('scenario').value,
+                    context: document.getElementById('context').value,
+                    lore: document.getElementById('lore').value,
+                    additionalInfo: document.getElementById('additionalInfo').value,
+                    initialMessage: document.getElementById('initialMessage').value,
+                    systemPrompt: document.getElementById('systemPrompt').value,
+                    temperature: parseFloat(document.getElementById('temperature').value),
+                    tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t),
+                    isPublic: document.getElementById('isPublic').checked,
+                    type: document.getElementById('type').value,
+                    modelConfig: {
+                        model: document.getElementById('model').value,
+                        maxTokens: parseInt(document.getElementById('maxTokens').value),
+                        topP: parseFloat(document.getElementById('topP').value),
+                        frequencyPenalty: parseFloat(document.getElementById('frequencyPenalty').value),
+                        presencePenalty: 0,
+                    }
+                };
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creando...';
+                errorMessage.style.display = 'none';
+
+                // Simulate API call (Replace with actual API)
+                console.log('Character Data:', characterData);
+
+                // Success message
+                setTimeout(() => {
+                    alert('¡Personaje creado exitosamente!');
+                    window.location.href = '/characters';
+                }, 1000);
+
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Crear Personaje';
+            }
+        });
+
+        // Monitor image input with 'input' event
+        document.getElementById('image').addEventListener('input', function() {
+            const imagePreview = document.getElementById('imagePreview');
+            if (this.value) {
+                imagePreview.src = this.value;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
