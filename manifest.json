@@ -1,0 +1,78 @@
+{
+  "name": "NEXUS - Plataforma de IA",
+  "short_name": "NEXUS",
+  "description": "Plataforma avanzada de conversación y roleplay con inteligencia artificial",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#111827",
+  "theme_color": "#dc2626",
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23111827' width='540' height='720'/><text x='270' y='360' font-size='48' fill='%23dc2626' text-anchor='middle' dominant-baseline='central' font-weight='bold'>NEXUS</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23dc2626;stop-opacity:1' /><stop offset='100%' style='stop-color:%23b91c1c;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='48'/><text x='96' y='96' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>N</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23dc2626;stop-opacity:1' /><stop offset='100%' style='stop-color:%23b91c1c;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='48'/><circle cx='96' cy='96' r='90' fill='none' stroke='white' stroke-width='8'/><text x='96' y='96' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>N</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23dc2626;stop-opacity:1' /><stop offset='100%' style='stop-color:%23b91c1c;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='512' height='512' rx='128'/><text x='256' y='256' font-size='320' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>N</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Crear Personaje",
+      "short_name": "Nuevo Personaje",
+      "description": "Crea un nuevo personaje",
+      "url": "./create-character.html",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%23dc2626' width='96' height='96' rx='24'/><text x='48' y='48' font-size='56' fill='white' text-anchor='middle' dominant-baseline='central'>🎭</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Personajes",
+      "short_name": "Mis Personajes",
+      "description": "Ver todos tus personajes",
+      "url": "./characters-list.html",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%233b82f6' width='96' height='96' rx='24'/><text x='48' y='48' font-size='56' fill='white' text-anchor='middle' dominant-baseline='central'>👥</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

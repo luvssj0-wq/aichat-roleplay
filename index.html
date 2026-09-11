@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="NEXUS - Plataforma avanzada de conversación y roleplay con IA" />
     <meta name="theme-color" content="#111827" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NEXUS" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23dc2626;stop-opacity:1' /><stop offset='100%' style='stop-color:%23b91c1c;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='48'/><text x='96' y='96' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>N</text></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23dc2626;stop-opacity:1' /><stop offset='100%' style='stop-color:%23b91c1c;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='48'/><text x='96' y='96' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>N</text></svg>" />
     <title>NEXUS - Plataforma de IA</title>
     <style>
         * {
@@ -113,6 +119,41 @@
 
         .btn-secondary:hover {
             background-color: #dc2626;
+        }
+
+        .install-card {
+            background-color: #1f2937;
+            border: 2px solid #dc2626;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .install-card h2 {
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .install-btn {
+            background-color: #dc2626;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            display: none;
+        }
+
+        .install-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        .install-btn.show {
+            display: inline-block;
         }
 
         .features {
@@ -237,6 +278,14 @@
             </nav>
         </header>
 
+        <!-- Install Card -->
+        <div class="install-card" id="installCard" style="display: none;">
+            <h2>📱 Descargar NEXUS</h2>
+            <p style="margin-bottom: 1rem; color: #d1d5db;">Instala NEXUS en tu dispositivo para acceder sin conexión</p>
+            <button class="install-btn show" id="installBtn">Descargar App</button>
+            <p style="margin-top: 1rem; font-size: 0.875rem; color: #9ca3af;">O usa el menú de tu navegador para instalar</p>
+        </div>
+
         <!-- Hero Section -->
         <section class="hero">
             <h1>NEXUS</h1>
@@ -283,8 +332,8 @@
             </div>
             <div class="feature-card">
                 <div class="feature-icon">⚡</div>
-                <h3>Rendimiento Optimizado</h3>
-                <p>Arquitectura escalable con MongoDB, contexto inteligente y compresión automática.</p>
+                <h3>Descargable como App</h3>
+                <p>Instala NEXUS directamente en tu navegador o dispositivo. Funciona sin conexión.</p>
             </div>
         </section>
 
@@ -300,19 +349,19 @@
                     <h3>🎭Personajes</h3>
                     <p>Lista de todos tus personajes con búsqueda, filtros y acciones (editar, exportar, eliminar)</p>
                 </a>
-                <a href="profiles.html" class="page-link">
+                <a href="create-character.html" class="page-link">
                     <h3>👤 Perfiles</h3>
                     <p>Crea múltiples perfiles de usuario para usar en diferentes chats</p>
                 </a>
-                <a href="chat.html" class="page-link">
+                <a href="create-character.html" class="page-link">
                     <h3>💬 Chats</h3>
                     <p>Interfaz de conversación con soporte multipersona y memoria infinita</p>
                 </a>
-                <a href="lorebook.html" class="page-link">
+                <a href="create-character.html" class="page-link">
                     <h3>📖 Lorebook</h3>
                     <p>Sistema de palabras clave para inyectar contexto automáticamente en conversaciones</p>
                 </a>
-                <a href="settings.html" class="page-link">
+                <a href="create-character.html" class="page-link">
                     <h3>⚙️ Ajustes</h3>
                     <p>Personaliza tu experiencia: tema, notificaciones, privacidad y más</p>
                 </a>
@@ -335,10 +384,10 @@
                 <li>✓ Conversaciones multipersona</li>
                 <li>✓ Interfaz 100% responsive y moderna</li>
                 <li>✓ 0 censura - Control total del usuario</li>
+                <li>✓ Descargable como PWA (Progressive Web App)</li>
+                <li>✓ Funciona sin conexión (offline-first)</li>
                 <li>✓ Sistema de Lorebook para inyección de contexto</li>
                 <li>✓ Exportación e importación de personajes</li>
-                <li>✓ Base de datos MongoDB escalable</li>
-                <li>✓ Backend con Node.js/Express + Frontend React/TypeScript</li>
             </ul>
         </section>
 
@@ -350,5 +399,45 @@
             </p>
         </footer>
     </div>
+
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then((registration) => {
+                console.log('Service Worker registered:', registration);
+            }).catch((error) => {
+                console.error('Service Worker registration failed:', error);
+            });
+        }
+
+        // Handle PWA Install
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        const installCard = document.getElementById('installCard');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installCard.style.display = 'block';
+            installBtn.classList.add('show');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                installBtn.classList.remove('show');
+                installCard.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('NEXUS PWA was installed');
+            installCard.style.display = 'none';
+            alert('🎉 ¡NEXUS instalada correctamente!');
+        });
+    </script>
 </body>
 </html>
