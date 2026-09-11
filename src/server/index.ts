@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import memoryRoutes from './routes/memory'
+import characterRoutes from './routes/characters'
 
 dotenv.config()
 
@@ -34,6 +35,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 // Memory System Routes
 app.use('/api/memory', memoryRoutes)
 
+// Character Routes
+app.use('/api/characters', characterRoutes)
+
 // Error handling
 app.use((err: any, req: Request, res: Response) => {
   console.error(err)
@@ -47,6 +51,7 @@ const startServer = async () => {
     console.log(`✓ NEXUS Server running at http://localhost:${port}`)
     console.log(`✓ API available at http://localhost:${port}/api`)
     console.log('✓ Memory System Active - Infinite Memory Architecture Ready')
+    console.log('✓ Character Management System Ready')
   })
 }
 
