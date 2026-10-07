@@ -6,19 +6,20 @@
   <title>NEXUS - Generador de personaje</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --panel-3: #0b1220;
-      --border: #2f3b4d;
-      --text: #e5e7eb;
-      --muted: #9aa6b2;
+      --bg: #f5f5f5;
+      --panel: #ffffff;
+      --panel-muted: #f8f8f8;
+      --sidebar: #f3f3f3;
+      --border: #e5e5e5;
+      --text: #1f1f1f;
+      --muted: #6b7280;
+      --muted-2: #8a8a8a;
       --accent: #dc2626;
-      --accent-soft: rgba(220, 38, 38, 0.12);
-      --assistant: #1f2937;
-      --user: #dc2626;
+      --accent-soft: rgba(220, 38, 38, 0.08);
+      --user-bubble: #f0f0f0;
+      --assistant-bubble: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.04);
       --success: #22c55e;
-      --shadow: rgba(0,0,0,0.28);
     }
 
     * { box-sizing: border-box; }
@@ -44,37 +45,36 @@
       display: flex;
       width: 100%;
       height: 100vh;
-      background: linear-gradient(135deg, #0b1120 0%, #111827 100%);
+      background: var(--bg);
     }
 
     .sidebar {
-      width: 280px;
-      background: rgba(12, 18, 30, 0.95);
+      width: 260px;
+      background: var(--sidebar);
       border-right: 1px solid var(--border);
-      padding: 0.9rem 0.85rem;
+      padding: 0.8rem 0.7rem;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.7rem;
     }
 
     .brand {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.35rem 0.4rem 0.8rem;
-      border-bottom: 1px solid var(--border);
+      padding: 0.25rem 0.5rem 0.75rem;
     }
 
     .brand-title {
       font-weight: 700;
-      letter-spacing: 0.04em;
-      font-size: 1.2rem;
-      background: linear-gradient(135deg, #f87171, #dc2626);
+      letter-spacing: 0.02em;
+      font-size: 1.15rem;
+      background: linear-gradient(135deg, #d11f1f, #a50d0d);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .sidebar-btn {
+    .new-chat-btn {
       border: none;
       border-radius: 0.75rem;
       background: var(--accent);
@@ -85,27 +85,27 @@
       transition: 0.2s ease;
     }
 
-    .sidebar-btn:hover {
-      filter: brightness(1.08);
+    .new-chat-btn:hover {
+      filter: brightness(1.05);
     }
 
     .history {
       flex: 1;
       overflow-y: auto;
-      padding-right: 0.2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.4rem;
+      padding-right: 0.2rem;
     }
 
     .history-item {
       background: transparent;
-      color: var(--text);
       border: 1px solid transparent;
-      text-align: left;
       border-radius: 0.75rem;
-      padding: 0.7rem 0.75rem;
+      text-align: left;
+      padding: 0.7rem 0.8rem;
       cursor: pointer;
+      color: var(--text);
       transition: 0.15s ease;
       white-space: nowrap;
       overflow: hidden;
@@ -113,28 +113,29 @@
     }
 
     .history-item:hover {
-      background: rgba(255,255,255,0.02);
+      background: rgba(0,0,0,0.02);
       border-color: var(--border);
     }
 
     .history-item.active {
-      background: rgba(220, 38, 38, 0.08);
-      border-color: rgba(220, 38, 38, 0.35);
+      background: rgba(220, 38, 38, 0.06);
+      border-color: rgba(220, 38, 38, 0.2);
+      color: var(--text);
     }
 
     .sidebar-footer {
       border-top: 1px solid var(--border);
-      padding-top: 0.8rem;
+      padding-top: 0.7rem;
       display: flex;
-      gap: 0.55rem;
+      gap: 0.5rem;
       flex-direction: column;
     }
 
     .mini-btn {
       border: 1px solid var(--border);
-      background: #0f172a;
+      background: white;
       color: var(--text);
-      border-radius: 0.7rem;
+      border-radius: 0.75rem;
       padding: 0.7rem 0.8rem;
       cursor: pointer;
       font-weight: 600;
@@ -145,7 +146,7 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(255,255,255,0.12);
     }
 
     .topbar {
@@ -155,13 +156,15 @@
       justify-content: space-between;
       padding: 0 1rem 0 1.2rem;
       border-bottom: 1px solid var(--border);
-      background: rgba(17, 24, 39, 0.9);
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px);
       flex-shrink: 0;
     }
 
     .topbar-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--muted);
+      font-weight: 600;
       letter-spacing: 0.01em;
     }
 
@@ -171,12 +174,32 @@
       gap: 0.7rem;
     }
 
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.42rem 0.72rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.5);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
     .icon-btn {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
+      background: rgba(255,255,255,0.7);
       color: var(--text);
       cursor: pointer;
     }
@@ -186,16 +209,17 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+      background: rgba(255,255,255,0.25);
     }
 
     .messages {
       flex: 1;
       overflow-y: auto;
-      padding: 1.3rem 1.5rem 1rem;
+      padding: 1.4rem 1.5rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      background: rgba(12, 18, 30, 0.7);
+      background: transparent;
     }
 
     .message {
@@ -208,24 +232,24 @@
     }
 
     .bubble {
-      max-width: min(75%, 900px);
+      max-width: min(78%, 980px);
       border-radius: 1.1rem;
-      padding: 0.9rem 1rem;
+      padding: 0.95rem 1rem;
       line-height: 1.6;
       white-space: pre-wrap;
       word-break: break-word;
-      box-shadow: 0 12px 22px var(--shadow);
+      box-shadow: 0 6px 18px var(--shadow);
+      border: 1px solid var(--border);
     }
 
     .message.user .bubble {
-      background: var(--user);
+      background: var(--user-bubble);
+      color: var(--text);
       border-bottom-right-radius: 0.25rem;
-      color: white;
     }
 
     .message.ai .bubble {
-      background: rgba(17, 24, 39, 0.9);
-      border: 1px solid var(--border);
+      background: var(--assistant-bubble);
       color: var(--text);
       border-bottom-left-radius: 0.25rem;
     }
@@ -233,7 +257,7 @@
     .composer {
       border-top: 1px solid var(--border);
       padding: 1rem 1.1rem 1.1rem;
-      background: rgba(17, 24, 39, 0.92);
+      background: rgba(255,255,255,0.7);
       display: flex;
       gap: 0.75rem;
       align-items: flex-end;
@@ -241,26 +265,28 @@
 
     .composer textarea {
       flex: 1;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(255,255,255,0.8);
       color: var(--text);
-      min-height: 54px;
-      max-height: 200px;
+      min-height: 56px;
+      max-height: 220px;
       resize: vertical;
       border: 1px solid var(--border);
       border-radius: 1rem;
       padding: 0.95rem 1rem;
       outline: none;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .send-btn {
       border: none;
       border-radius: 0.9rem;
-      min-width: 120px;
+      min-width: 122px;
       padding: 0.9rem 1.15rem;
       background: var(--accent);
       color: white;
       font-weight: 700;
       cursor: pointer;
+      box-shadow: 0 8px 18px rgba(220, 38, 38, 0.18);
     }
 
     .send-btn:disabled {
@@ -268,45 +294,37 @@
       cursor: not-allowed;
     }
 
-    .status-pill {
-      display: inline-flex;
+    .empty-state {
+      width: 100%;
+      height: 100%;
+      display: flex;
       align-items: center;
-      gap: 0.5rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.4rem 0.75rem;
+      justify-content: center;
       color: var(--muted);
-      font-size: 0.78rem;
-      white-space: nowrap;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-      display: inline-block;
+      text-align: center;
+      padding: 2rem;
+      font-size: 1rem;
     }
 
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(17, 24, 39, 0.35);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 50;
+      z-index: 60;
     }
 
     .modal.open { display: flex; }
 
     .modal-card {
       width: min(420px, calc(100vw - 2rem));
-      background: #111827;
+      background: white;
       border: 1px solid var(--border);
       border-radius: 1rem;
       padding: 1.1rem;
-      box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.12);
     }
 
     .modal-header {
@@ -318,19 +336,20 @@
 
     .modal-title {
       font-weight: 700;
+      font-size: 1rem;
     }
 
     .close-btn {
       border: none;
       background: transparent;
       color: var(--text);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       cursor: pointer;
     }
 
     .api-input {
       width: 100%;
-      background: #0b1220;
+      background: #fafafa;
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 0.8rem;
@@ -348,24 +367,6 @@
       font-weight: 700;
       padding: 0.8rem 1rem;
       cursor: pointer;
-    }
-
-    .empty-state {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      text-align: center;
-      font-size: 1.05rem;
-      padding: 2rem;
-    }
-
-    @media (max-width: 900px) {
-      .sidebar {
-        width: 220px;
-      }
     }
 
     @media (max-width: 760px) {
@@ -394,7 +395,7 @@
         <div class="brand-title">NEXUS</div>
       </div>
 
-      <button class="sidebar-btn" onclick="newSession()">+ Nuevo chat</button>
+      <button class="new-chat-btn" onclick="newSession()">+ Nuevo chat</button>
 
       <div class="history" id="history"></div>
 
