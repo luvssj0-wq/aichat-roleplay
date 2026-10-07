@@ -191,6 +191,24 @@
             border-radius: 0.375rem;
         }
 
+        .roleplay-indicator {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+        }
+
+        .roleplay-indicator.inactive {
+            background-color: #374151;
+            color: #9ca3af;
+        }
+
+        .roleplay-indicator.active {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #fca5a5;
+            border: 1px solid #dc2626;
+        }
+
         .chat-actions {
             display: flex;
             gap: 0.5rem;
@@ -331,8 +349,8 @@
             color: #dc2626;
         }
 
-        .message-web-search {
-            font-size: 0.75rem;
+        .message-metadata {
+            font-size: 0.7rem;
             color: #4ade80;
             margin-top: 0.5rem;
             font-style: italic;
@@ -350,7 +368,7 @@
 
         .input-options {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
             flex-wrap: wrap;
             font-size: 0.75rem;
         }
@@ -364,6 +382,35 @@
 
         .option-check input {
             cursor: pointer;
+        }
+
+        .roleplay-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .roleplay-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #374151;
+            background-color: transparent;
+            color: #9ca3af;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .roleplay-btn:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .roleplay-btn.active {
+            background-color: #dc2626;
+            border-color: #dc2626;
+            color: white;
         }
 
         .input-group {
@@ -501,6 +548,17 @@
             background-color: #b91c1c;
         }
 
+        /* Info Banner */
+        .info-banner {
+            padding: 0.75rem 1rem;
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            color: #93c5fd;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -550,36 +608,15 @@
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
 
-        .typing {
-            display: inline-flex;
-            gap: 0.25rem;
-        }
-
-        .typing span {
-            width: 0.5rem;
-            height: 0.5rem;
-            background-color: #9ca3af;
-            border-radius: 50%;
-            animation: typingAnimation 1.4s infinite;
-        }
-
-        .typing span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typingAnimation {
-            0%, 60%, 100% {
-                opacity: 0.5;
-                transform: translateY(0);
-            }
-            30% {
-                opacity: 1;
-                transform: translateY(-0.5rem);
-            }
+        .system-message {
+            text-align: center;
+            padding: 0.75rem;
+            background-color: rgba(168, 85, 247, 0.1);
+            color: #d8b4fe;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(168, 85, 247, 0.2);
         }
     </style>
 </head>
@@ -635,7 +672,10 @@
             <div class="chat-header">
                 <div>
                     <div class="chat-title" id="chatTitle">Selecciona un chat</div>
-                    <div class="model-indicator" id="modelIndicator">Modelo: -</div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <div class="model-indicator" id="modelIndicator">Modelo: -</div>
+                        <div class="roleplay-indicator inactive" id="roleplayIndicator">🎭 Roleplay: Pausado</div>
+                    </div>
                 </div>
                 <div class="chat-actions">
                     <button class="chat-btn" onclick="clearCurrentChat()" id="clearChatBtn" style="display:none;">
@@ -652,12 +692,26 @@
             </div>
 
             <div class="input-area" id="inputArea" style="display:none;">
+                <div class="info-banner" id="infoBanner" style="display:none;">
+                    ℹ️ <span id="bannerText"></span>
+                </div>
+
                 <div class="input-options">
                     <label class="option-check">
                         <input type="checkbox" id="webSearchToggle" checked>
                         <span>🌐 Búsqueda Web</span>
                     </label>
                 </div>
+
+                <div class="roleplay-controls" id="roleplayControls">
+                    <button class="roleplay-btn" onclick="toggleRoleplay()" id="toggleRoleplayBtn" title="Inicia o detiene el modo roleplay">
+                        🎭 Iniciar Roleplay
+                    </button>
+                    <button class="roleplay-btn" onclick="stopRoleplay()" id="stopRoleplayBtn" style="display:none;" title="Detiene el modo roleplay">
+                        ⏹️ Detener Roleplay
+                    </button>
+                </div>
+
                 <div class="input-group">
                     <textarea 
                         class="message-input" 
@@ -690,6 +744,8 @@
             chats: JSON.parse(localStorage.getItem('nexusChats')) || [],
             currentChatId: localStorage.getItem('currentChatId') || null,
             currentModel: localStorage.getItem('currentModel') || 'gryphe/mythomist-7b',
+            roleplayActive: false,
+            roleplayMode: localStorage.getItem('roleplayMode') || 'off', // off, waiting, active
             pendingAction: null,
         };
 
@@ -699,6 +755,24 @@
             'meta-llama/llama-2-70b-chat': '🦙 Llama 2 (Versátil)',
             'mistralai/mistral-7b-instruct': '🔮 Mistral (Rápido)',
         };
+
+        const ROLEPLAY_SYSTEM_PROMPT = `Eres un asistente de roleplay. Seguirás estas reglas:
+
+1. NO INICIES ROLEPLAY automáticamente. Espera a que el usuario diga explícitamente "empieza a rolear", "roleplay", "comencemos a rolear" o similar.
+
+2. UNA VEZ EN MODO ROLEPLAY:
+   - Responde totalmente en carácter
+   - Incluye acciones entre asteriscos *así*
+   - Mantén la narrativa inmersiva
+   - Expande la historia naturalmente
+
+3. SI EL USUARIO DICE: "pause", "detén el roleplay", "para", "frena", "salir del roleplay" o similar:
+   - DETENTE INMEDIATAMENTE del roleplay
+   - Vuelve a modo asistente normal
+   - Pregunta cómo continuar
+
+4. ANTES del roleplay, actúa como asistente normal.
+5. SI EL USUARIO NO ESPECIFICA PERSONAJE: pregunta qué rol/escena desea.`;
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
@@ -735,6 +809,63 @@
             document.getElementById('modelIndicator').textContent = `Modelo: ${modelName}`;
         }
 
+        function toggleRoleplay() {
+            state.roleplayMode = state.roleplayMode === 'off' ? 'waiting' : 'off';
+            updateRoleplayUI();
+            
+            if (state.roleplayMode === 'waiting') {
+                showBanner('🎭 Modo Roleplay ACTIVADO. Describe la escena y espera a que la IA comience cuando digas.');
+            } else {
+                showBanner('');
+            }
+        }
+
+        function stopRoleplay() {
+            state.roleplayMode = 'off';
+            updateRoleplayUI();
+            showBanner('⏹️ Roleplay detenido. Volviendo a modo asistente normal.');
+        }
+
+        function updateRoleplayUI() {
+            const indicator = document.getElementById('roleplayIndicator');
+            const toggleBtn = document.getElementById('toggleRoleplayBtn');
+            const stopBtn = document.getElementById('stopRoleplayBtn');
+            
+            if (state.roleplayMode === 'off') {
+                indicator.textContent = '🎭 Roleplay: Pausado';
+                indicator.className = 'roleplay-indicator inactive';
+                toggleBtn.textContent = '🎭 Iniciar Roleplay';
+                toggleBtn.classList.remove('active');
+                stopBtn.style.display = 'none';
+            } else if (state.roleplayMode === 'waiting') {
+                indicator.textContent = '🎭 Roleplay: En Espera';
+                indicator.className = 'roleplay-indicator active';
+                toggleBtn.textContent = '🎭 Roleplay Activo';
+                toggleBtn.classList.add('active');
+                stopBtn.style.display = 'block';
+            } else if (state.roleplayMode === 'active') {
+                indicator.textContent = '🎭 Roleplay: ACTIVO';
+                indicator.className = 'roleplay-indicator active';
+                toggleBtn.textContent = '🎭 Roleplay Activo';
+                toggleBtn.classList.add('active');
+                stopBtn.style.display = 'block';
+            }
+
+            localStorage.setItem('roleplayMode', state.roleplayMode);
+        }
+
+        function showBanner(text) {
+            const banner = document.getElementById('infoBanner');
+            const bannerText = document.getElementById('bannerText');
+            
+            if (text) {
+                bannerText.textContent = text;
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
         async function sendMessage() {
             const chat = state.chats.find(c => c.id === state.currentChatId);
             if (!chat) return;
@@ -747,6 +878,24 @@
             if (!apiKey) {
                 alert('Por favor ingresa tu API Key de OpenRouter');
                 return;
+            }
+
+            // Detectar comandos de roleplay
+            const lowerMsg = message.toLowerCase();
+            const roleplayStartKeywords = ['empieza a rolear', 'empieza roleplay', 'comencemos a rolear', 'comienza el roleplay', 'roleplay', 'rolea', 'roleemos'];
+            const roleplayStopKeywords = ['pause', 'detén', 'frena', 'para', 'salir del roleplay', 'stop roleplay'];
+
+            const startsRoleplay = roleplayStartKeywords.some(kw => lowerMsg.includes(kw));
+            const stopsRoleplay = roleplayStopKeywords.some(kw => lowerMsg.includes(kw));
+
+            if (startsRoleplay && state.roleplayMode === 'waiting') {
+                state.roleplayMode = 'active';
+                updateRoleplayUI();
+                showBanner('🎭 ¡Roleplay iniciado! La IA ahora está en modo roleplay.');
+            } else if (stopsRoleplay && state.roleplayMode === 'active') {
+                state.roleplayMode = 'waiting';
+                updateRoleplayUI();
+                showBanner('⏹️ Roleplay pausado. Puedes reanudar cuando quieras.');
             }
 
             // Agregar mensaje del usuario
@@ -762,7 +911,7 @@
             renderMessages();
             saveChats();
 
-            // Deshabilitar botón y mostrar typing
+            // Deshabilitar botón
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
 
@@ -774,8 +923,14 @@
                 if (useWebSearch) {
                     const webResults = await performWebSearch(message);
                     if (webResults) {
-                        assistantContent = `[Búsqueda Web Realizada]\n\n${webResults}\n\n`;
+                        assistantContent = `[📌 Información de Internet]\n${webResults}\n\n`;
                     }
+                }
+
+                // Construir sistema prompt basado en modo roleplay
+                let systemPrompt = ROLEPLAY_SYSTEM_PROMPT;
+                if (state.roleplayMode === 'off') {
+                    systemPrompt = `Eres un asistente útil, amable y preciso. Responde de manera clara y concisa.`;
                 }
 
                 // Llamar a OpenRouter
@@ -787,11 +942,12 @@
                     },
                     body: JSON.stringify({
                         model: state.currentModel,
+                        system: systemPrompt,
                         messages: chat.messages.map(m => ({
                             role: m.role,
                             content: m.content,
                         })),
-                        temperature: 0.8,
+                        temperature: state.roleplayMode === 'active' ? 0.9 : 0.7,
                         max_tokens: 2048,
                     }),
                 });
@@ -809,6 +965,7 @@
                     content: assistantContent,
                     timestamp: new Date().toISOString(),
                     webSearchUsed: useWebSearch,
+                    roleplayMode: state.roleplayMode,
                 };
 
                 chat.messages.push(assistantMsg);
@@ -922,6 +1079,15 @@
             chat.messages.forEach((msg) => {
                 const msgDiv = document.createElement('div');
                 msgDiv.className = `message ${msg.role}`;
+                
+                let metadata = '';
+                if (msg.webSearchUsed) {
+                    metadata += '<div class="message-metadata">🌐 Con búsqueda web</div>';
+                }
+                if (msg.roleplayMode === 'active') {
+                    metadata += '<div class="message-metadata">🎭 En modo roleplay</div>';
+                }
+
                 msgDiv.innerHTML = `
                     <div class="message-content">
                         <div class="message-bubble">
@@ -930,7 +1096,7 @@
                                 <button class="message-action-btn" onclick="deleteMessage('${msg.id}', event)" title="Borrar">×</button>
                             </div>
                         </div>
-                        ${msg.webSearchUsed ? '<div class="message-web-search">🌐 Incluye resultados de búsqueda web</div>' : ''}
+                        ${metadata}
                     </div>
                 `;
                 container.appendChild(msgDiv);
@@ -1019,6 +1185,11 @@
         function loadSettings() {
             const savedModel = localStorage.getItem('currentModel');
             if (savedModel) state.currentModel = savedModel;
+            
+            const savedRoleplayMode = localStorage.getItem('roleplayMode');
+            if (savedRoleplayMode) state.roleplayMode = savedRoleplayMode;
+            
+            updateRoleplayUI();
         }
 
         function escapeHtml(text) {
