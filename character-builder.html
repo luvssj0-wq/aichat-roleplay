@@ -3,254 +3,490 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NEXUS - Generador de Personaje por Chat</title>
+  <title>NEXUS - Generador de personaje</title>
   <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --panel-3: #0b1220;
+      --border: #2f3b4d;
+      --text: #e5e7eb;
+      --muted: #9aa6b2;
+      --accent: #dc2626;
+      --accent-soft: rgba(220, 38, 38, 0.12);
+      --assistant: #1f2937;
+      --user: #dc2626;
+      --success: #22c55e;
+      --shadow: rgba(0,0,0,0.28);
+    }
+
     * { box-sizing: border-box; }
-    body {
+
+    html, body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-      color: white;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
       overflow: hidden;
     }
+
+    button, textarea, input {
+      font: inherit;
+    }
+
     .app {
       display: flex;
-      height: 100vh;
       width: 100%;
+      height: 100vh;
+      background: linear-gradient(135deg, #0b1120 0%, #111827 100%);
     }
+
     .sidebar {
-      width: 300px;
-      background: #0f172a;
-      border-right: 1px solid #374151;
-      padding: 1rem;
+      width: 280px;
+      background: rgba(12, 18, 30, 0.95);
+      border-right: 1px solid var(--border);
+      padding: 0.9rem 0.85rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.8rem;
     }
+
     .brand {
-      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 0.4rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-title {
       font-weight: 700;
-      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      letter-spacing: 0.04em;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, #f87171, #dc2626);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .btn {
+
+    .sidebar-btn {
       border: none;
-      border-radius: 0.5rem;
-      padding: 0.75rem 1rem;
-      background: #dc2626;
+      border-radius: 0.75rem;
+      background: var(--accent);
       color: white;
+      height: 42px;
       cursor: pointer;
       font-weight: 600;
+      transition: 0.2s ease;
     }
-    .btn.secondary {
-      background: #1f2937;
-      border: 1px solid #374151;
+
+    .sidebar-btn:hover {
+      filter: brightness(1.08);
     }
-    .panel-list {
+
+    .history {
       flex: 1;
       overflow-y: auto;
+      padding-right: 0.2rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
     }
-    .panel-item {
-      background: #1f2937;
+
+    .history-item {
+      background: transparent;
+      color: var(--text);
       border: 1px solid transparent;
-      border-radius: 0.5rem;
-      padding: 0.75rem 1rem;
-      cursor: pointer;
-      color: #e5e7eb;
       text-align: left;
-      width: 100%;
+      border-radius: 0.75rem;
+      padding: 0.7rem 0.75rem;
+      cursor: pointer;
+      transition: 0.15s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .panel-item.active {
-      border-color: #dc2626;
-      background: rgba(220, 38, 38, 0.12);
+
+    .history-item:hover {
+      background: rgba(255,255,255,0.02);
+      border-color: var(--border);
     }
+
+    .history-item.active {
+      background: rgba(220, 38, 38, 0.08);
+      border-color: rgba(220, 38, 38, 0.35);
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 0.8rem;
+      display: flex;
+      gap: 0.55rem;
+      flex-direction: column;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      border-radius: 0.7rem;
+      padding: 0.7rem 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-width: 0;
+      background: rgba(15, 23, 42, 0.75);
     }
-    .header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid #374151;
-      background: #1f2937;
+
+    .topbar {
+      height: 72px;
       display: flex;
-      justify-content: space-between;
-      gap: 1rem;
       align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem 0 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.9);
+      flex-shrink: 0;
     }
-    .header h2 {
-      margin: 0;
-      font-size: 1.2rem;
+
+    .topbar-title {
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: 0.01em;
     }
-    .chat {
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .chat-wrap {
       flex: 1;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      min-height: 0;
     }
+
     .messages {
       flex: 1;
       overflow-y: auto;
-      padding: 1rem;
+      padding: 1.3rem 1.5rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      background: #111827;
+      background: rgba(12, 18, 30, 0.7);
     }
-    .msg {
-      max-width: 80%;
+
+    .message {
+      display: flex;
+      width: 100%;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .bubble {
+      max-width: min(75%, 900px);
+      border-radius: 1.1rem;
       padding: 0.9rem 1rem;
-      border-radius: 0.9rem;
-      line-height: 1.5;
+      line-height: 1.6;
       white-space: pre-wrap;
       word-break: break-word;
+      box-shadow: 0 12px 22px var(--shadow);
     }
-    .msg.user {
-      margin-left: auto;
-      background: #dc2626;
+
+    .message.user .bubble {
+      background: var(--user);
+      border-bottom-right-radius: 0.25rem;
       color: white;
-      border-bottom-right-radius: 0.2rem;
     }
-    .msg.ai {
-      background: #1f2937;
-      border: 1px solid #374151;
-      color: #e5e7eb;
-      border-bottom-left-radius: 0.2rem;
+
+    .message.ai .bubble {
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 0.25rem;
     }
+
     .composer {
-      border-top: 1px solid #374151;
-      background: #1f2937;
-      padding: 1rem;
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.1rem 1.1rem;
+      background: rgba(17, 24, 39, 0.92);
       display: flex;
       gap: 0.75rem;
-      align-items: end;
+      align-items: flex-end;
     }
-    textarea {
+
+    .composer textarea {
       flex: 1;
-      min-height: 52px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      min-height: 54px;
       max-height: 200px;
       resize: vertical;
-      border-radius: 0.75rem;
-      border: 1px solid #374151;
-      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 0.95rem 1rem;
+      outline: none;
+    }
+
+    .send-btn {
+      border: none;
+      border-radius: 0.9rem;
+      min-width: 120px;
+      padding: 0.9rem 1.15rem;
+      background: var(--accent);
       color: white;
-      padding: 0.85rem 1rem;
-      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
     }
-    .status {
-      color: #9ca3af;
-      font-size: 0.8rem;
+
+    .send-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
-    .system-box {
-      background: rgba(59, 130, 246, 0.08);
-      border-left: 3px solid #60a5fa;
-      color: #bfdbfe;
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      margin: 0.5rem 0 1rem 0;
-      font-size: 0.85rem;
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.4rem 0.75rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
     }
-    @media (max-width: 768px) {
-      .app { display: block; }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      display: inline-block;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(420px, calc(100vw - 2rem));
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.1rem;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+
+    .modal-title {
+      font-weight: 700;
+    }
+
+    .close-btn {
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .api-input {
+      width: 100%;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 0.8rem;
+      padding: 0.8rem 0.9rem;
+      margin-top: 0.35rem;
+    }
+
+    .save-key-btn {
+      margin-top: 1rem;
+      width: 100%;
+      border: none;
+      border-radius: 0.8rem;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+    }
+
+    .empty-state {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      text-align: center;
+      font-size: 1.05rem;
+      padding: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 220px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        display: block;
+      }
       .sidebar {
         width: 100%;
-        height: auto;
+        height: 220px;
         border-right: none;
-        border-bottom: 1px solid #374151;
+        border-bottom: 1px solid var(--border);
       }
-      .main { height: calc(100vh - 250px); }
+      .main {
+        height: calc(100vh - 220px);
+      }
+      .bubble {
+        max-width: 90%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">NEXUS</div>
-      <button class="btn" onclick="startNewSession()">+ Nuevo personaje</button>
-      <div class="panel-list" id="sessionsList"></div>
-      <button class="btn secondary" onclick="saveCurrentCharacter()">Guardar personaje</button>
+      <div class="brand">
+        <div class="brand-title">NEXUS</div>
+      </div>
+
+      <button class="sidebar-btn" onclick="newSession()">+ Nuevo chat</button>
+
+      <div class="history" id="history"></div>
+
+      <div class="sidebar-footer">
+        <button class="mini-btn" onclick="saveCharacterSummary()">Guardar personaje</button>
+      </div>
     </aside>
 
     <main class="main">
-      <header class="header">
-        <h2 id="sessionTitle">Generador de personaje</h2>
-        <div class="status" id="statusText">Modo: conversación natural</div>
-      </header>
+      <div class="topbar">
+        <div class="topbar-title" id="sessionTitle">Personaje nuevo</div>
+        <div class="topbar-actions">
+          <div class="status-pill"><span class="dot"></span> Conversación activa</div>
+          <button class="icon-btn" aria-label="Configuración" id="openSettings">⚙️</button>
+        </div>
+      </div>
 
-      <div class="chat">
+      <div class="chat-wrap">
         <div class="messages" id="messages"></div>
+
         <div class="composer">
-          <textarea id="input" placeholder="Ej: Lucia es una artista urbana de 21 años..."></textarea>
-          <button class="btn" onclick="sendMessage()">Enviar</button>
+          <textarea id="promptInput" placeholder="Ej: Lucia es una artista urbana de 21 años..."></textarea>
+          <button class="send-btn" id="sendBtn">Enviar</button>
         </div>
       </div>
     </main>
   </div>
 
+  <div class="modal" id="settingsModal" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">API Key</div>
+        <button class="close-btn" id="closeSettings" aria-label="Cerrar">✕</button>
+      </div>
+      <label style="display:block; color: var(--muted);">OpenRouter</label>
+      <input class="api-input" id="apiKeyInput" type="password" placeholder="sk-or-..." />
+      <button class="save-key-btn" id="saveKeyBtn">Guardar</button>
+    </div>
+  </div>
+
   <script>
-    const STORAGE_KEY = 'nexus_character_builder_v1';
-    let sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    let currentSessionId = null;
+    const STORAGE_KEY = 'nexus_character_chat_v1';
+    const SETTINGS_KEY = 'nexus_openrouter_key';
 
-    const systemPrompt = `Eres un asistente experto en creación de personajes para roleplay y ficción.
-Tu trabajo es ayudar al usuario a construir personajes en conversación natural.
+    const state = {
+      sessions: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
+      currentId: null,
+    };
 
-Reglas:
-- No uses formularios ni campos obligatorios.
-- El usuario describe al personaje en lenguaje natural.
-- Tú debes completar, enriquecer, ordenar y expandir la información de manera creativa.
-- Haz preguntas cortas y útiles solo cuando haga falta.
-- Cuando el usuario da detalles, debes integrar y profundizar: edad, apariencia, personalidad, motivaciones, historia, habilidades, conflictos, estilo de habla, relaciones, mundo, etc.
-- Puedes proponer variaciones si el usuario quiere cambiar la dirección.
-- Si el usuario no da detalles, haz una propuesta breve y coherente.
-- El objetivo es que el personaje termine bien definido y usable para un chat de roleplay.
-- Haz la respuesta en español, natural, con tono cálido y creativo.
-- Cuando el usuario diga cosas como 'ya está', 'listo', 'terminado', 'guardalo', debes resumir el personaje final.`;
+    const systemPrompt = `Eres un asistente experto en creación de personajes para roleplay. El usuario está creando el personaje en una conversación natural, no en formularios.
 
-    function createSession(title = 'Nuevo personaje') {
+Tu objetivo:
+- ayudar a construir personajes detallados a través del chat
+- escuchar la idea del usuario y expandirla con coherencia
+- enriquecer: nombre, edad, apariencia, personalidad, historia, motivaciones, conflictos, relaciones, estilo de habla, escenario, habilidades, detalles memorables
+- no usar campos ni listas obligatorias
+- mantener un flujo natural y conversacional
+- si el usuario da un dato, lo integras sin romper la continuidad
+- cuando el usuario diga cosas como 'ya está', 'listo', 'terminado', 'guardalo', debes entregar un resumen final útil para roleplay
+- usa español natural, creativo y preciso
+- si falta algo, pregunta una sola cosa corta para seguir avanzando
+- nunca empieces con un formulario ni exijas respuestas estructuradas`;
+
+    function makeSession(title = 'Personaje nuevo') {
       const id = Date.now().toString();
       const session = {
         id,
         title,
-        messages: [
-          {
-            role: 'ai',
-            text: '¡Perfecto! Hablemos del personaje. Puedes empezar con algo como: "Lucia es una artista urbana de 21 años..." y yo lo desarrollaré con detalles, personalidad, historia y contexto. Cuando quieras, te ayudo a pulirlo o a dejarlo listo para roleplay.'
-          }
-        ]
+        messages: [{ role: 'ai', text: '¡Perfecto! Habla conmigo como si estuvieras describiendo a tu personaje. Por ejemplo: "Lucia es una artista urbana de 21 años que vive en un barrio lleno de grafitis..." y yo lo ampliaré con personalidad, historia, entorno y tono para roleplay.' }]
       };
-      sessions.unshift(session);
-      currentSessionId = id;
-      persist();
+      state.sessions.unshift(session);
+      state.currentId = id;
+      saveSessions();
       render();
       renderMessages();
+      return session;
     }
 
-    function startNewSession() {
-      const title = `Personaje ${sessions.length + 1}`;
-      createSession(title);
+    function saveSessions() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.sessions));
     }
 
-    function persist() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-    }
-
-    function renderSessionsList() {
-      const list = document.getElementById('sessionsList');
+    function renderHistory() {
+      const list = document.getElementById('history');
       list.innerHTML = '';
 
-      sessions.forEach(session => {
+      state.sessions.forEach(session => {
         const btn = document.createElement('button');
-        btn.className = 'panel-item' + (session.id === currentSessionId ? ' active' : '');
+        btn.className = 'history-item' + (session.id === state.currentId ? ' active' : '');
         btn.textContent = session.title;
         btn.onclick = () => {
-          currentSessionId = session.id;
+          state.currentId = session.id;
           render();
           renderMessages();
         };
@@ -259,74 +495,81 @@ Reglas:
     }
 
     function renderMessages() {
-      const container = document.getElementById('messages');
-      const session = sessions.find(s => s.id === currentSessionId);
-      container.innerHTML = '';
+      const messages = document.getElementById('messages');
+      const current = state.sessions.find(s => s.id === state.currentId);
+      if (!current) {
+        messages.innerHTML = '<div class="empty-state">Comienza un personaje desde cero.</div>';
+        return;
+      }
 
-      if (!session) return;
-
-      session.messages.forEach(msg => {
-        const el = document.createElement('div');
-        el.className = 'msg ' + (msg.role === 'user' ? 'user' : 'ai');
-        el.textContent = msg.text;
-        container.appendChild(el);
+      messages.innerHTML = '';
+      current.messages.forEach(msg => {
+        const row = document.createElement('div');
+        row.className = 'message ' + msg.role;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = msg.text;
+        row.appendChild(bubble);
+        messages.appendChild(row);
       });
 
-      container.scrollTop = container.scrollHeight;
+      messages.scrollTop = messages.scrollHeight;
     }
 
     function render() {
-      const session = sessions.find(s => s.id === currentSessionId);
-      document.getElementById('sessionTitle').textContent = session ? session.title : 'Generador de personaje';
-      renderSessionsList();
+      const current = state.sessions.find(s => s.id === state.currentId);
+      document.getElementById('sessionTitle').textContent = current ? current.title : 'Personaje nuevo';
+      renderHistory();
+    }
+
+    function newSession() {
+      const title = `Personaje ${state.sessions.length + 1}`;
+      makeSession(title);
     }
 
     function addMessage(role, text) {
-      const session = sessions.find(s => s.id === currentSessionId);
-      if (!session) return;
-      session.messages.push({ role, text });
-      persist();
+      const current = state.sessions.find(s => s.id === state.currentId);
+      if (!current) return;
+      current.messages.push({ role, text });
+      saveSessions();
       renderMessages();
     }
 
-    function saveCurrentCharacter() {
-      const session = sessions.find(s => s.id === currentSessionId);
-      if (!session) return;
-
-      const text = session.messages
-        .filter(m => m.role === 'user' || m.role === 'ai')
-        .map(m => m.text)
-        .join('\n\n');
-
-      const nameMatch = text.match(/(?:nombre|llama|se llama|es una persona llamada|es\s+)([A-ZÁÉÍÓÚÑ][a-záéíóúñA-ZÁÉÍÓÚÑ\s]+)/i);
-      const title = (nameMatch && nameMatch[1]) ? nameMatch[1].trim() : `Personaje ${session.title}`;
-      session.title = title;
-      persist();
+    function saveCharacterSummary() {
+      const current = state.sessions.find(s => s.id === state.currentId);
+      if (!current) return;
+      const text = current.messages.map(m => m.text).join('\n\n');
+      const fromTitle = text.match(/(?:se llama|llama|nombre|es\s+)([A-ZÁÉÍÓÚÑ][a-záéíóúñA-ZÁÉÍÓÚÑ\s]+)/i);
+      if (fromTitle && fromTitle[1]) {
+        current.title = fromTitle[1].trim();
+      }
+      saveSessions();
       render();
       alert('Personaje guardado correctamente.');
     }
 
     async function sendMessage() {
-      const input = document.getElementById('input');
+      const input = document.getElementById('promptInput');
       const value = input.value.trim();
-      if (!value || !currentSessionId) return;
+      if (!value) return;
+
+      const current = state.sessions.find(s => s.id === state.currentId);
+      if (!current) return;
 
       addMessage('user', value);
       input.value = '';
 
-      const session = sessions.find(s => s.id === currentSessionId);
-      const history = session.messages
-        .map(msg => `${msg.role === 'user' ? 'Usuario' : 'IA'}: ${msg.text}`)
-        .join('\n\n');
+      const apiKey = localStorage.getItem(SETTINGS_KEY);
+      if (!apiKey) {
+        addMessage('ai', 'Para usar la IA, guarda tu API Key en la configuración del engranaje.');
+        return;
+      }
 
-      const prompt = `${systemPrompt}\n\nHistorial de conversación:\n${history}\n\nEl usuario quiere continuar o ajustar el personaje.`;
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
 
       try {
-        const apiKey = localStorage.getItem('nexus_openrouter_key') || '';
-        if (!apiKey) {
-          addMessage('ai', 'Para activar la creación con IA, necesitas poner tu API Key de OpenRouter en localStorage bajo la clave "nexus_openrouter_key".');
-          return;
-        }
+        const messages = current.messages.map(msg => ({ role: msg.role === 'user' ? 'user' : 'assistant', content: msg.text }));
 
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
@@ -336,33 +579,67 @@ Reglas:
           },
           body: JSON.stringify({
             model: 'gryphe/mythomist-7b',
-            messages: [{ role: 'system', content: prompt }, { role: 'user', content: value }],
+            messages: [{ role: 'system', content: systemPrompt }, ...messages],
             temperature: 0.9,
             max_tokens: 1200
           })
         });
 
-        if (!response.ok) throw new Error('Error en la API');
+        if (!response.ok) {
+          throw new Error('Error con la API');
+        }
 
         const data = await response.json();
         const aiText = data?.choices?.[0]?.message?.content || 'No pude generar la respuesta.';
         addMessage('ai', aiText);
       } catch (error) {
-        addMessage('ai', 'No se pudo conectar con la IA. Verifica la API Key de OpenRouter y que la conexión esté disponible.');
+        addMessage('ai', 'No se pudo conectar con la IA. Revisa la API Key y vuelve a intentarlo.');
+      } finally {
+        sendBtn.disabled = false;
       }
     }
 
-    document.getElementById('input').addEventListener('keydown', (e) => {
+    function openSettings() {
+      const modal = document.getElementById('settingsModal');
+      const input = document.getElementById('apiKeyInput');
+      input.value = localStorage.getItem(SETTINGS_KEY) || '';
+      modal.classList.add('open');
+      input.focus();
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsModal').classList.remove('open');
+    }
+
+    function saveApiKey() {
+      const value = document.getElementById('apiKeyInput').value.trim();
+      if (value) {
+        localStorage.setItem(SETTINGS_KEY, value);
+      } else {
+        localStorage.removeItem(SETTINGS_KEY);
+      }
+      closeSettings();
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('promptInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
       }
     });
 
-    if (sessions.length === 0) {
-      createSession();
+    document.getElementById('openSettings').addEventListener('click', openSettings);
+    document.getElementById('closeSettings').addEventListener('click', closeSettings);
+    document.getElementById('saveKeyBtn').addEventListener('click', saveApiKey);
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+      if (e.target.id === 'settingsModal') closeSettings();
+    });
+
+    if (!state.sessions.length) {
+      makeSession();
     } else {
-      currentSessionId = sessions[0].id;
+      state.currentId = state.sessions[0].id;
       render();
       renderMessages();
     }
